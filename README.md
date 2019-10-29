@@ -1,5 +1,12 @@
 # React Calendar
 
+## Changes made
+Functionality was added to allow attachments to be added to events and to deal with display of non-recurring events.
+
+When a new event is created, the initial save will create the event and then the Attachment Control will appear and the Save Button is replaced with a close button.
+- This is because the Attachment control from SPFx controls uploads immediately to the item based on ID (so it needs to exist first) - one day I may tackle that control.
+- The original calendar webpart would not show anything that was not recurring, changed the control to show the new item view (recurring switch) to enable viewing and ability to change to recurring.
+
 ## Summary
 This Web Part allows you to manage events in a calendar. 
 Uses a list of existing calendars on any website.
