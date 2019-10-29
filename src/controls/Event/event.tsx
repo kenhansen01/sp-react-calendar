@@ -7,6 +7,7 @@ import * as moment from 'moment';
 import { parseString } from 'xml2js';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 import { PeoplePicker, PrincipalType } from "@pnp/spfx-controls-react/lib/PeoplePicker";
+import { ListItemAttachments } from '@pnp/spfx-controls-react/lib/ListItemAttachments';
 import {
   Panel,
   PanelType,
@@ -45,6 +46,7 @@ import { Map, ICoordinates, MapType } from "@pnp/spfx-controls-react/lib/Map";
 import { EventRecurrenceInfo } from '../../controls/EventRecurrenceInfo/EventRecurrenceInfo';
 import { getGUID } from '@pnp/common';
 import { toLocaleShortDateString } from '../../utils/dateUtils';
+import { sp } from '@pnp/sp';
 const format = require('string-format');
 
 const DayPickerStrings: IDatePickerStrings = {
@@ -119,6 +121,7 @@ export class Event extends React.Component<IEventProps, IEventState> {
     this.onEditorStateChange = this.onEditorStateChange.bind(this);
     this.onRenderFooterContent = this.onRenderFooterContent.bind(this);
     this.onSave = this.onSave.bind(this);
+    this.dismissPanel = this.dismissPanel.bind(this);
     this.onSelectDateEnd = this.onSelectDateEnd.bind(this);
     this.onSelectDateStart = this.onSelectDateStart.bind(this);
     this.onUpdateCoordinates = this.onUpdateCoordinates.bind(this);
@@ -226,16 +229,26 @@ export class Event extends React.Component<IEventProps, IEventState> {
           break;
         case IPanelModelEnum.add:
           await this.spService.addEvent(eventData, this.props.siteUrl, this.props.listId);
+          let newItem = await sp.web.lists.getById(this.props.listId).items.orderBy('ID', false).top(1).get();
+          let resolveNewEvent = this.spService.getEvent(this.props.siteUrl, this.props.listId, newItem[0].Id);
+          let newEvent = await resolveNewEvent;
+          this.setState({eventData: newEvent, showAttachments: true, showCompleteButton: true});
           break;
         default:
           break;
       }
 
       this.setState({ isSaving: false });
-      this.props.onDissmissPanel(true);
+      if (panelMode === IPanelModelEnum.edit) {
+        this.dismissPanel();
+      }
     } catch (error) {
       this.setState({ hasError: true, errorMessage: error.message, isSaving: false });
     }
+  }
+
+  private dismissPanel() {
+    this.props.onDissmissPanel(true);
   }
 
   /**
@@ -257,7 +270,7 @@ export class Event extends React.Component<IEventProps, IEventState> {
    */
   private async  renderEventData(eventId?: number) {
 
-    this.setState({ isloading: true });
+    this.setState({ isloading: true, showCompleteButton: false });
     const event: IEventData = !eventId ? this.props.event : await this.spService.getEvent(this.props.siteUrl, this.props.listId, eventId);
 
     let editorState: EditorState;
@@ -269,7 +282,7 @@ export class Event extends React.Component<IEventProps, IEventState> {
     this.categoryDropdownOption = await this.spService.getChoiceFieldOptions(this.props.siteUrl, this.props.listId, 'Category');
     // Edit Mode ?
     if (this.props.panelMode == IPanelModelEnum.edit && event) {
-
+      this.setState({ showAttachments: true });
       // Get hours of event
       const startHour = moment(event.EventDate).format('HH').toString();
       const startMin = moment(event.EventDate).format('mm').toString();
@@ -303,25 +316,46 @@ export class Event extends React.Component<IEventProps, IEventState> {
       event.geolocation.Latitude = this.latitude;
       event.geolocation.Longitude = this.longitude;
 
-      const recurrenceInfo = event.EventType === "4" && event.MasterSeriesItemID !== "" ? event.RecurrenceData : await this.returnExceptionRecurrenceInfo(event.RecurrenceData);
-      // Update Component Data
-      this.setState({
-        eventData: event,
-        startDate: event.EventDate,
-        endDate: event.EndDate,
-        startSelectedHour: { key: startHour, text: startHour },
-        startSelectedMin: { key: startMin, text: startMin },
-        endSelectedHour: { key: endHour, text: endHour },
-        endSelectedMin: { key: endMin, text: endMin },
-        editorState: editorState,
-        selectedUsers: selectedUsers,
-        userPermissions: userListPermissions,
-        isloading: false,
-        siteRegionalSettings: siteRegionalSettigns,
-        locationLatitude: this.latitude,
-        locationLongitude: this.longitude,
-        recurrenceDescription: recurrenceInfo
-      });
+      if(event.RecurrenceData !== "") {
+        const recurrenceInfo = event.EventType === "4" && event.MasterSeriesItemID !== "" ? event.RecurrenceData : await this.returnExceptionRecurrenceInfo(event.RecurrenceData);
+        // Update Component Data
+        this.setState({
+          eventData: event,
+          startDate: event.EventDate,
+          endDate: event.EndDate,
+          startSelectedHour: { key: startHour, text: startHour },
+          startSelectedMin: { key: startMin, text: startMin },
+          endSelectedHour: { key: endHour, text: endHour },
+          endSelectedMin: { key: endMin, text: endMin },
+          editorState: editorState,
+          selectedUsers: selectedUsers,
+          userPermissions: userListPermissions,
+          isloading: false,
+          siteRegionalSettings: siteRegionalSettigns,
+          locationLatitude: this.latitude,
+          locationLongitude: this.longitude,
+          recurrenceDescription: recurrenceInfo
+        });
+      } else {
+        // Update Component Data
+        this.setState({
+          eventData: event,
+          startDate: event.EventDate,
+          endDate: event.EndDate,
+          startSelectedHour: { key: startHour, text: startHour },
+          startSelectedMin: { key: startMin, text: startMin },
+          endSelectedHour: { key: endHour, text: endHour },
+          endSelectedMin: { key: endMin, text: endMin },
+          editorState: editorState,
+          selectedUsers: selectedUsers,
+          userPermissions: userListPermissions,
+          isloading: false,
+          siteRegionalSettings: siteRegionalSettigns,
+          locationLatitude: this.latitude,
+          locationLongitude: this.longitude,
+          showRecurrenceSeriesInfo: false
+        });
+      }
     } else {
       editorState = EditorState.createEmpty();
       this.setState({
@@ -505,12 +539,21 @@ export class Event extends React.Component<IEventProps, IEventState> {
           )
         }
         {
-          (this.state.userPermissions.hasPermissionAdd || this.state.userPermissions.hasPermissionEdit) &&
+          (!this.state.showCompleteButton && (this.state.userPermissions.hasPermissionAdd || this.state.userPermissions.hasPermissionEdit)) &&
           <PrimaryButton
             disabled={this.state.disableButton}
             onClick={this.onSave}
             style={{ marginBottom: '15px', marginRight: '8px', float: 'right' }}>
             {strings.SaveButtonLabel}
+          </PrimaryButton>
+        }
+        {
+          (this.state.showCompleteButton) &&
+          <PrimaryButton
+            disabled={this.state.disableButton}
+            onClick={this.dismissPanel}
+            style={{ marginBottom: '15px', marginRight: '8px', float: 'right' }}>
+            {strings.CompleteButtonLabel}
           </PrimaryButton>
 
         }
@@ -540,8 +583,6 @@ export class Event extends React.Component<IEventProps, IEventState> {
   private onSelectDateEnd(newDate: Date) {
     this.setState({ endDate: newDate });
   }
-
-
 
   /**
    *
@@ -1148,6 +1189,18 @@ export class Event extends React.Component<IEventProps, IEventState> {
                     enableSearch={this.state.userPermissions.hasPermissionAdd || this.state.userPermissions.hasPermissionEdit ? true : false}
                     onUpdateCoordinates={this.onUpdateCoordinates}
                   />
+                </div>
+                <div>
+                  { 
+                    this.state.showAttachments && this.state.eventData && this.state.eventData.Id && (
+                      <ListItemAttachments
+                        listId={this.props.listId}
+                        itemId={this.state.eventData.Id}
+                        context={this.props.context}
+                        disabled={false}
+                      />
+                    )
+                  }
                 </div>
               </div>
             }

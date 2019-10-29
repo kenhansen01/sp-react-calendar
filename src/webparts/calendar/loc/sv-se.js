@@ -33,6 +33,7 @@ define([], function () {
       DialogCloseButtonLabel: "Avbryt",
       DialogConfirmDeleteLabel: "Ta bort",
       SaveButtonLabel: "Spara",
+      CompleteButtonLabel: "Stänga",
       DeleteButtonLabel: "Ta bort",
       CancelButtonLabel: "Avbryt",
       LoadingEventsLabel: "Laddar händelser...",

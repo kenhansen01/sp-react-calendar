@@ -378,8 +378,9 @@ export default class spservices {
 
     try {
       const web = new Web(siteUrl);
-      results = await web.lists.select("Title", "ID").filter('BaseTemplate eq 106').get();
-
+      const ctEvt = "Event";
+      results = await web.lists.select("Title", "ID", "ContentTypes/Name").expand("ContentTypes").get();
+      results = results.filter(cResult => cResult.ContentTypes.some(cType => cType.Name == ctEvt));
     } catch (error) {
       return Promise.reject(error);
     }

@@ -21,6 +21,8 @@ export interface IEventState {
   disableButton?: boolean;
   isSaving?:boolean;
   isDeleting?:boolean;
+  showAttachments?:boolean;
+  showCompleteButton?: boolean;
   displayDialog:boolean;
   userPermissions?: IUserPermissions;
   isloading:boolean;

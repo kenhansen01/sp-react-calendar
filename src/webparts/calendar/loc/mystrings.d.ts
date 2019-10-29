@@ -32,6 +32,7 @@ declare interface ICalendarWebPartStrings {
   DialogCloseButtonLabel: string;
   DialogConfirmDeleteLabel: string;
   SaveButtonLabel: string;
+  CompleteButtonLabel: string;
   DeleteButtonLabel: string;
   CancelButtonLabel: string;
   LoadingEventsLabel: string;
