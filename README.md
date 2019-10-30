@@ -20,71 +20,71 @@ The Web Part checks the user's permissions for the View, Add, Edit, and Delete e
 
 
 ##  
-![calendar](../assets/animatevideo.gif) 
+![calendar](./assets/animatevideo.gif) 
 
 
 ##  
-![calendar](../assets/weekly_moderncalendar.gif) 
+![calendar](./assets/weekly_moderncalendar.gif) 
 
 ##  
-![calendar](../assets/modercalendar_monthly.gif) 
+![calendar](./assets/modercalendar_monthly.gif) 
 
 ##  
-![calendar](../assets/moderncalendar_yearly.gif) 
+![calendar](./assets/moderncalendar_yearly.gif) 
 
  
 
 
 ##  Web Part  - Screenshots
 
-![calendar](../assets/calendar_teams.jpg)
+![calendar](./assets/calendar_teams.jpg)
 
-![calendar](../assets/calendar_teams2.jpg)
+![calendar](./assets/calendar_teams2.jpg)
 
-![calendar](../assets/screen1.png)
-
-
-![calendar](../assets/screen1.0.png)
+![calendar](./assets/screen1.png)
 
 
-![calendar](../assets/screen1.1.png)
+![calendar](./assets/screen1.0.png)
 
 
-![calendar](../assets/screen1.2.png)
+![calendar](./assets/screen1.1.png)
 
 
-![calendar](../assets/screen1.3.png)
+![calendar](./assets/screen1.2.png)
 
 
-![calendar](../assets/screen1.4.png)
+![calendar](./assets/screen1.3.png)
 
 
-![calendar](../assets/screen2.png)
+![calendar](./assets/screen1.4.png)
 
 
-
-![calendar](../assets/screen3.png)
+![calendar](./assets/screen2.png)
 
 
 
-![calendar](../assets/screen4.png)
+![calendar](./assets/screen3.png)
 
 
 
-![calendar](../assets/screen5.png)
-
-
-![calendar](../assets/screen6.png)
-
-
-![calendar](../assets/screen7.png)
-
-
-![calendar](../assets/screen8.png)
+![calendar](./assets/screen4.png)
 
 
 
-![calendar](../assets/screen9.png)
+![calendar](./assets/screen5.png)
+
+
+![calendar](./assets/screen6.png)
+
+
+![calendar](./assets/screen7.png)
+
+
+![calendar](./assets/screen8.png)
+
+
+
+![calendar](./assets/screen9.png)
 ##   
  
 
